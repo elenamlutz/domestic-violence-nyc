@@ -308,6 +308,15 @@ p.caption {
 
 @media (max-width:700px) {
 
+    h1.headline {
+        font-size: 2rem;
+        line-height: 1.1;
+        margin-bottom: 0.25rem;
+        margin-top: 0rem;
+        font-weight: 650;
+        padding-top:10px;
+    }
+
     .chart-row {
         display:block;
     }

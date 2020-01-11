@@ -35,7 +35,15 @@ const tip = d3
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "Number of Cases: <span style='color:white'>" + d.cases + '</span>'
+    return (
+      "<b><span style='color:white'>" +
+      d.year +
+      '</b>' +
+      '<br>' +
+      "Number of Cases: <span style='color:white'>" +
+      d.cases +
+      '</span>'
+    )
   })
 svg.call(tip)
 
@@ -79,7 +87,6 @@ function ready(datapoints) {
 
   svg.selectAll('.y-axis path').remove()
   svg.selectAll('.x-axis path').remove()
-  // svg.selectAll('.y-axis line').remove()
   svg.selectAll('.x-axis line').remove()
   svg.selectAll('.y-axis text').attr('dx', -40)
   svg.selectAll('.x-axis text').attr('dy', -40)
@@ -90,4 +97,58 @@ function ready(datapoints) {
     .attr('stroke-width', 0.4)
     .attr('x2', width)
     .lower()
+
+  function render() {
+    const svgContainer = svg.node().closest('div')
+    const svgWidth = svgContainer.offsetWidth
+    const svgHeight = height + margin.top + margin.bottom
+
+    const actualSvg = d3.select(svg.node().closest('svg'))
+    actualSvg.attr('width', svgWidth).attr('height', svgHeight)
+    const newWidth = svgWidth - margin.left - margin.right
+    const newHeight = svgHeight - margin.top - margin.bottom
+
+    xPositionScale.range([0, newWidth])
+    if (svgWidth < 500) {
+      xAxis.ticks(2).tickValues([2009, 2018])
+    } else {
+      xAxis
+        .ticks(11)
+        .tickValues([
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018
+        ])
+    }
+
+    yPositionScale.range([newHeight, 0])
+
+    svg
+      .selectAll('.rape-circle')
+      .attr('r', d => radiusScale(d.cases))
+      .attr('cx', d => xPositionScale(d.year))
+      .attr('cy', d => yPositionScale(d.victim))
+      .attr('y', function(d) {
+        return yPositionScale(d.victim)
+      })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+
+    svg
+      .selectAll('.y-axis line')
+      .attr('stroke', 'black')
+      .attr('stroke-width', 0.4)
+      .attr('x2', newWidth)
+      .lower()
+    svg.selectAll('.x-axis').call(xAxis)
+  }
+
+  window.addEventListener('resize', render)
 }

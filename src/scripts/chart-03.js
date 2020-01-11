@@ -26,10 +26,18 @@ const yPositionScale = d3
 
 const tip = d3
   .tip()
-  .attr('class', 'd3-tip1')
+  .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return d.domestic_homicide
+    return (
+      "<b><span style='color:white'>" +
+      d.year +
+      '</b>' +
+      '<br>' +
+      "Number of Cases: <span style='color:white'>" +
+      d.domestic_homicide +
+      '</span>'
+    )
   })
 svg.call(tip)
 
@@ -81,4 +89,67 @@ function ready(datapoints) {
   svg.selectAll('.y-axis text').attr('dx', -20)
   svg.selectAll('.x-axis text').attr('dx', -15)
   svg.selectAll('.x-axis text').attr('dy', 20)
+
+  function render() {
+    const svgContainer = svg.node().closest('div')
+    const svgWidth = svgContainer.offsetWidth
+    const svgHeight = height + margin.top + margin.bottom
+
+    const actualSvg = d3.select(svg.node().closest('svg'))
+    actualSvg.attr('width', svgWidth).attr('height', svgHeight)
+    const newWidth = svgWidth - margin.left - margin.right
+    const newHeight = svgHeight - margin.top - margin.bottom
+
+    xPositionScale.range([0, newWidth])
+    if (svgWidth < 500) {
+      xAxis.ticks(5).tickValues([2011, 2013, 2015, 2017, 2019])
+    } else {
+      xAxis
+        .ticks(11)
+        .tickValues([
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019
+        ])
+    }
+    if (svgWidth < 500) {
+      svg.selectAll('.homicides-rect').attr('width', 20)
+    } else {
+      svg.selectAll('.homicides-rect').attr('width', 30)
+    }
+    if (svgWidth < 500) {
+      svg.selectAll('.x-axis text').attr('dx', -5)
+    }
+
+    yPositionScale.range([newHeight, 0])
+
+    svg
+      .selectAll('.homicides-rect')
+      .attr('x', function(d) {
+        return xPositionScale(d.year)
+      })
+      .attr('height', function(d) {
+        return height - yPositionScale(d.domestic_homicide)
+      })
+      .attr('y', function(d) {
+        return yPositionScale(d.domestic_homicide)
+      })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+
+    svg.selectAll('.x-axis').call(xAxis)
+    svg.selectAll('.y-axis path').remove()
+    svg.selectAll('.x-axis path').remove()
+    svg.selectAll('.x-axis line').remove()
+    svg.selectAll('.y-axis line').remove()
+  }
+
+  window.addEventListener('resize', render)
 }
