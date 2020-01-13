@@ -82,7 +82,7 @@ img {
     padding: 5px;
     margin: 5%;
     margin-left: 40%;
-    background-color: lightgrey;
+    background-color: rgba(126, 123, 123, 0.897);
     border: none;
     border-radius: 3px;
     text-transform: uppercase;
@@ -91,7 +91,7 @@ img {
 }
 
 #click:hover {
-  background-color: grey;
+  background-color: rgb(182, 179, 179);
   text-decoration: none;
 }
 
